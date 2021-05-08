@@ -25,10 +25,36 @@ class Ball(GameSprite):
         self.rect.y += self.speed_y
         if self.rect.x > w - 40 or self.rect.x < 0:
             self.speed_x *= -1
+            self.rect.x = w // 2
+            self.rect.y = h // 2
         if self.rect.y > h - 40 or self.rect.y < 0:
             self.speed_y *= -1
+        if sprite.collide_rect(self, player_01):
+            self.speed_x *= -1
+        if sprite.collide_rect(self, player_02):
+            self.speed_x *= -1
 
-ball = Ball("ball.png", 40, 40, w / 2, h / 2, 6, 6)
+class Player(GameSprite):
+    def move_01(self):
+        keys = key.get_pressed()
+        if keys[K_w]:
+            if self.rect.y > 0:
+                self.rect.y -= self.speed_y
+        if keys[K_s]:
+            if self.rect.y < h - 100:
+                self.rect.y += self.speed_y
+    def move_02(self):
+        keys = key.get_pressed()
+        if keys[K_UP]:
+            if self.rect.y > 0:
+                self.rect.y -= self.speed_y
+        if keys[K_DOWN]:
+            if self.rect.y < h - 100:
+                self.rect.y += self.speed_y
+
+ball = Ball("ball.png", 40, 40, w // 2, h // 2, 3, 3)
+player_01 = Player("player.png", 10, 100, 20, h / 2, 0, 10)
+player_02 = Player("player.png", 10, 100, w - 60, h / 2, 0, 10)
 
 clock = time.Clock()
 
@@ -38,7 +64,11 @@ while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
-    ball.move()
     ball.draw()
+    ball.move()
+    player_01.move_01()
+    player_01.draw()
+    player_02.move_02()
+    player_02.draw()
     display.update()
-    clock.tick(50)
+    clock.tick(100)
