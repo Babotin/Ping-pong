@@ -1,9 +1,12 @@
 from pygame import *
+font.init()
 
 w = 1000
 h = 700
 
 window = display.set_mode((w, h))
+
+font = font.Font(None, 50)
 
 class GameSprite(sprite.Sprite):
     def __init__(self, file, W, H, x, y, speed_x, speed_y):
@@ -20,13 +23,26 @@ class GameSprite(sprite.Sprite):
         window.blit(self.file, self.rect)
 
 class Ball(GameSprite):
+    p_01 = 0
+    p_02 = 0
     def move(self):
+        global score
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
-        if self.rect.x > w - 40 or self.rect.x < 0:
+
+        if self.rect.x > w - 40:
             self.speed_x *= -1
             self.rect.x = w // 2
             self.rect.y = h // 2
+            self.p_01 += 1
+            score = font.render(str(ball.p_01) + "  :  " + str(ball.p_02), True, (255, 255, 255))
+        if self.rect.x < 0:
+            self.speed_x *= -1
+            self.rect.x = w // 2
+            self.rect.y = h // 2
+            self.p_02 += 1
+            score = font.render(str(ball.p_01) + "  :  " + str(ball.p_02), True, (255, 255, 255))
+
         if self.rect.y > h - 40 or self.rect.y < 0:
             self.speed_y *= -1
         if sprite.collide_rect(self, player_01):
@@ -53,8 +69,10 @@ class Player(GameSprite):
                 self.rect.y += self.speed_y
 
 ball = Ball("ball.png", 40, 40, w // 2, h // 2, 3, 3)
-player_01 = Player("player.png", 10, 100, 20, h / 2, 0, 10)
-player_02 = Player("player.png", 10, 100, w - 60, h / 2, 0, 10)
+player_01 = Player("player.png", 10, 100, 20, h / 2, 0, 5)
+player_02 = Player("player.png", 10, 100, w - 60, h / 2, 0, 5)
+score = font.render(str(ball.p_01) + "  :  " + str(ball.p_02), True, (255, 255, 255))
+score_rect = score.get_rect(centerx = w / 2, centery = 20)
 
 clock = time.Clock()
 
@@ -70,5 +88,6 @@ while game:
     player_01.draw()
     player_02.move_02()
     player_02.draw()
+    window.blit(score, score_rect)
     display.update()
     clock.tick(100)
