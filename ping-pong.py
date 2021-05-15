@@ -25,6 +25,7 @@ class GameSprite(sprite.Sprite):
 class Ball(GameSprite):
     p_01 = 0
     p_02 = 0
+    run = True
     def move(self):
         global score
         self.rect.x += self.speed_x
@@ -49,6 +50,18 @@ class Ball(GameSprite):
             self.speed_x *= -1
         if sprite.collide_rect(self, player_02):
             self.speed_x *= -1
+        
+        if self.p_01 >= 3 or self.p_02 >= 3:
+            if self.p_01 - self.p_02 >= 2:
+                self.win = font.render("Победил 1 игрок!!!", True, (255, 255, 255))
+                self.win_rect = self.win.get_rect(centerx = w / 2, centery = h / 2)
+                self.run = False
+            if self.p_02 - self.p_01 >= 2:
+                self.win = font.render("Победил 2 игрок!!!", True, (255, 255, 255))
+                self.win_rect = self.win.get_rect(centerx = w / 2, centery = h / 2)
+                self.run = False
+
+
 
 class Player(GameSprite):
     def move_01(self):
@@ -82,12 +95,15 @@ while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
-    ball.draw()
-    ball.move()
-    player_01.move_01()
-    player_01.draw()
-    player_02.move_02()
-    player_02.draw()
+    if ball.run:
+        ball.draw()
+        ball.move()
+        player_01.move_01()
+        player_01.draw()
+        player_02.move_02()
+        player_02.draw()
+    else:
+        window.blit(ball.win, ball.win_rect)
     window.blit(score, score_rect)
     display.update()
     clock.tick(100)
